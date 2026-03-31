@@ -1,8 +1,17 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0f0b1c;
+  --foreground: #f8f5ff;
+  --surface: #13111c;
+  --surface-rgb: 19 17 28;
+  --surface-muted: #1d1830;
+  --color-primary: #9d84ff;
+  --color-primary-rgb: 157 132 255;
+  --color-primary-strong: #b39dff;
+  --color-accent: #ff84e8;
+  --color-accent-rgb: 255 132 232;
+  --color-accent-strong: #ffb0f2;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
@@ -12,20 +21,32 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-primary: var(--color-primary);
+  --color-accent: var(--color-accent);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #080612;
+    --foreground: #f8f5ff;
   }
 }
 
+html,
 body {
+  min-height: 100dvh;
   background: var(--background);
   color: var(--foreground);
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+body {
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
   overscroll-behavior-y: none;
   -webkit-font-smoothing: antialiased;
