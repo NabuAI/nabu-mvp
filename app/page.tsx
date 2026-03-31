@@ -74,7 +74,7 @@ const ProgressBar = ({
   return (
     <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden mt-2">
       <motion.div
-        className="h-full bg-[#9D84FF] rounded-full"
+        className="h-full rounded-full bg-[var(--color-primary)]"
         initial={{ width: 0 }}
         animate={{ width: `${progress}%` }}
         transition={{ duration: 0.4, ease: "easeInOut" }}
@@ -94,7 +94,7 @@ const Button = ({
     "w-full min-h-13 py-3.5 px-6 rounded-full font-semibold text-base transition-all duration-200 flex items-center justify-center gap-2 active:scale-[0.98]";
   const variants = {
     primary:
-      "bg-[#9D84FF] text-[#13111C] hover:bg-[#B39DFF] disabled:bg-[#9D84FF]/30 disabled:text-white/30",
+      "bg-[var(--color-primary)] text-[var(--surface)] hover:bg-[var(--color-primary-strong)] disabled:bg-[rgb(var(--color-primary-rgb)/0.3)] disabled:text-white/30",
     secondary: "bg-white/10 text-white hover:bg-white/20 disabled:opacity-50",
     outline:
       "border-2 border-white/20 text-white hover:bg-white/5 disabled:opacity-50",
@@ -124,13 +124,13 @@ const OptionCard = ({
     className={`w-full p-4 rounded-2xl border-2 text-left transition-all duration-200 flex items-center gap-4
       ${
         selected
-          ? "border-[#9D84FF] bg-[#9D84FF]/10"
+          ? "border-[var(--color-primary)] bg-[rgb(var(--color-primary-rgb)/0.1)]"
           : "border-white/5 bg-white/5 hover:bg-white/10"
       }`}
   >
     {Icon && (
       <div
-        className={`p-3 rounded-xl ${selected ? "bg-[#9D84FF] text-[#13111C]" : "bg-white/10 text-white"}`}
+        className={`p-3 rounded-xl ${selected ? "bg-[var(--color-primary)] text-[var(--surface)]" : "bg-white/10 text-white"}`}
       >
         <Icon size={24} />
       </div>
@@ -149,12 +149,18 @@ const OptionCard = ({
       <motion.div
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
-        className="ml-auto text-[#9D84FF]"
+        className="ml-auto text-[var(--color-primary)]"
       >
         <Check size={24} />
       </motion.div>
     )}
   </motion.button>
+);
+
+const StickyFooter = ({ children }: { children: React.ReactNode }) => (
+  <div className="sticky bottom-0 -mx-6 mt-auto bg-gradient-to-t from-[var(--surface)] via-[rgb(var(--surface-rgb)/0.95)] to-transparent px-6 pt-4 pb-[max(1.25rem,var(--safe-bottom))]">
+    <div className="space-y-3">{children}</div>
+  </div>
 );
 
 // --- Main Component ---
@@ -213,20 +219,23 @@ export default function NabuOnboarding() {
     switch (step) {
       case 1: // Welcome
         return (
-          <div className="flex flex-col h-full justify-between pt-12 pb-8">
-            <div className="flex-1 flex flex-col items-center justify-center text-center space-y-6">
+          <div className="flex min-h-full flex-col pt-12 pb-8">
+            <div className="flex flex-1 flex-col items-center justify-center text-center space-y-6">
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.2, type: "spring" }}
-                className="w-24 h-24 bg-gradient-to-br from-[#9D84FF] to-[#FF84E8] rounded-3xl flex items-center justify-center shadow-[0_0_40px_rgba(157,132,255,0.3)]"
+                className="w-24 h-24 rounded-3xl bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-accent)] flex items-center justify-center shadow-[0_0_40px_rgb(var(--color-primary-rgb)/0.3)]"
               >
-                <Heart size={48} className="text-[#13111C] fill-current" />
+                <Heart
+                  size={48}
+                  className="fill-current text-[var(--surface)]"
+                />
               </motion.div>
               <div className="space-y-4">
                 <h1 className="text-4xl font-bold tracking-tight text-white leading-tight">
                   A better way to <br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#9D84FF] to-[#FF84E8]">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-accent)]">
                     grow together.
                   </span>
                 </h1>
@@ -236,18 +245,18 @@ export default function NabuOnboarding() {
                 </p>
               </div>
             </div>
-            <div className="space-y-4">
+            <StickyFooter>
               <Button onClick={nextStep}>Get Started</Button>
               <p className="text-center text-sm text-white/40">
                 Takes about 1 minute
               </p>
-            </div>
+            </StickyFooter>
           </div>
         );
 
       case 2: // Name
         return (
-          <div className="flex flex-col h-full justify-between py-8">
+          <div className="flex min-h-full flex-col gap-10 py-8">
             <div className="space-y-8">
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold text-white">
@@ -263,12 +272,14 @@ export default function NabuOnboarding() {
                 placeholder="Your name or nickname"
                 value={data.name}
                 onChange={(e) => updateData({ name: e.target.value })}
-                className="w-full bg-white/5 border-2 border-white/10 rounded-2xl px-6 py-5 text-xl text-white placeholder:text-white/30 focus:outline-none focus:border-[#9D84FF] transition-colors"
+                className="w-full bg-white/5 border-2 border-white/10 rounded-2xl px-6 py-5 text-xl text-white placeholder:text-white/30 focus:outline-none focus:border-[var(--color-primary)] transition-colors"
               />
             </div>
-            <Button disabled={!data.name.trim()} onClick={nextStep}>
-              Continue
-            </Button>
+            <StickyFooter>
+              <Button disabled={!data.name.trim()} onClick={nextStep}>
+                Continue
+              </Button>
+            </StickyFooter>
           </div>
         );
 
@@ -281,8 +292,8 @@ export default function NabuOnboarding() {
           "Prefer not to say",
         ];
         return (
-          <div className="flex flex-col h-full py-8 min-h-0">
-            <div className="space-y-8 flex-1 min-h-0">
+          <div className="flex min-h-full flex-col gap-8 py-8">
+            <div className="space-y-8">
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold text-white">
                   How do you identify?
@@ -291,7 +302,7 @@ export default function NabuOnboarding() {
                   This helps us tailor your experience.
                 </p>
               </div>
-              <div className="space-y-3 overflow-y-auto pb-4 max-h-full">
+              <div className="space-y-3">
                 {genders.map((g) => (
                   <OptionCard
                     key={g}
@@ -310,22 +321,23 @@ export default function NabuOnboarding() {
                     onChange={(e) =>
                       updateData({ customGender: e.target.value })
                     }
-                    className="w-full bg-white/5 border-2 border-white/10 rounded-2xl px-6 py-4 text-white placeholder:text-white/30 focus:outline-none focus:border-[#9D84FF] mt-2"
+                    className="w-full bg-white/5 border-2 border-white/10 rounded-2xl px-6 py-4 text-white placeholder:text-white/30 focus:outline-none focus:border-[var(--color-primary)] mt-2"
                   />
                 )}
               </div>
             </div>
-            <Button
-              className="mt-4 shrink-0"
-              disabled={
-                !data.gender ||
-                (data.gender === "Prefer to self-describe" &&
-                  !data.customGender?.trim())
-              }
-              onClick={nextStep}
-            >
-              Continue
-            </Button>
+            <StickyFooter>
+              <Button
+                disabled={
+                  !data.gender ||
+                  (data.gender === "Prefer to self-describe" &&
+                    !data.customGender?.trim())
+                }
+                onClick={nextStep}
+              >
+                Continue
+              </Button>
+            </StickyFooter>
           </div>
         );
 
@@ -339,8 +351,8 @@ export default function NabuOnboarding() {
           "Just exploring for now",
         ];
         return (
-          <div className="flex flex-col h-full py-8 min-h-0">
-            <div className="space-y-8 flex-1 min-h-0">
+          <div className="flex min-h-full flex-col gap-8 py-8">
+            <div className="space-y-8">
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold text-white">
                   What's your relationship status?
@@ -349,7 +361,7 @@ export default function NabuOnboarding() {
                   We'll adapt our questions to fit your vibe.
                 </p>
               </div>
-              <div className="space-y-3 overflow-y-auto pb-4 max-h-full">
+              <div className="space-y-3">
                 {situations.map((s) => (
                   <OptionCard
                     key={s}
@@ -360,13 +372,11 @@ export default function NabuOnboarding() {
                 ))}
               </div>
             </div>
-            <Button
-              className="mt-4 shrink-0"
-              disabled={!data.relationshipStatus}
-              onClick={nextStep}
-            >
-              Continue
-            </Button>
+            <StickyFooter>
+              <Button disabled={!data.relationshipStatus} onClick={nextStep}>
+                Continue
+              </Button>
+            </StickyFooter>
           </div>
         );
 
@@ -380,41 +390,37 @@ export default function NabuOnboarding() {
           { title: "Handle tension better", icon: Zap },
         ];
         return (
-          <div className="flex flex-col h-full py-8 min-h-0">
-            <div className="space-y-6 flex-1 min-h-0">
-              <div className="space-y-2">
-                <h2 className="text-3xl font-bold text-white">
-                  What do you hope to improve?
-                </h2>
-                <p className="text-white/60">
-                  Pick the most important one for you right now.
-                </p>
-              </div>
-              <div className="grid grid-cols-1 gap-3 overflow-y-auto pb-4 max-h-full">
-                {reasons.map((r) => (
-                  <OptionCard
-                    key={r.title}
-                    title={r.title}
-                    icon={r.icon}
-                    selected={data.mainReason === r.title}
-                    onClick={() => updateData({ mainReason: r.title })}
-                  />
-                ))}
-              </div>
+          <div className="flex min-h-full flex-col gap-6 py-8">
+            <div className="space-y-2">
+              <h2 className="text-3xl font-bold text-white">
+                What do you hope to improve?
+              </h2>
+              <p className="text-white/60">
+                Pick the most important one for you right now.
+              </p>
             </div>
-            <Button
-              className="mt-4 shrink-0"
-              disabled={!data.mainReason}
-              onClick={nextStep}
-            >
-              Continue
-            </Button>
+            <div className="grid grid-cols-1 gap-3">
+              {reasons.map((r) => (
+                <OptionCard
+                  key={r.title}
+                  title={r.title}
+                  icon={r.icon}
+                  selected={data.mainReason === r.title}
+                  onClick={() => updateData({ mainReason: r.title })}
+                />
+              ))}
+            </div>
+            <StickyFooter>
+              <Button disabled={!data.mainReason} onClick={nextStep}>
+                Continue
+              </Button>
+            </StickyFooter>
           </div>
         );
 
       case 6: // Conflict Style (Custom Slider)
         return (
-          <div className="flex flex-col h-full justify-between py-8">
+          <div className="flex min-h-full flex-col gap-10 py-8">
             <div className="space-y-12">
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold text-white">
@@ -430,7 +436,7 @@ export default function NabuOnboarding() {
                 <div className="h-4 bg-white/10 rounded-full relative flex items-center">
                   {/* Active Track */}
                   <div
-                    className="absolute h-full bg-[#9D84FF] rounded-full transition-all duration-300"
+                    className="absolute h-full rounded-full bg-[var(--color-primary)] transition-all duration-300"
                     style={{
                       width: `${((data.conflictStyle - 1) / 4) * 100}%`,
                     }}
@@ -448,7 +454,7 @@ export default function NabuOnboarding() {
                         className={`w-6 h-6 rounded-full transition-all duration-300 shadow-lg
                         ${
                           data.conflictStyle === val
-                            ? "bg-white scale-125 border-4 border-[#9D84FF]"
+                            ? "bg-white scale-125 border-4 border-[var(--color-primary)]"
                             : "bg-[#231F33] border-2 border-white/20 hover:border-white/50"
                         }`}
                       />
@@ -466,7 +472,9 @@ export default function NabuOnboarding() {
                 </div>
               </div>
             </div>
-            <Button onClick={nextStep}>Continue</Button>
+            <StickyFooter>
+              <Button onClick={nextStep}>Continue</Button>
+            </StickyFooter>
           </div>
         );
 
@@ -491,7 +499,7 @@ export default function NabuOnboarding() {
           data.preferredVibes.length >= 2 && data.preferredVibes.length <= 3;
 
         return (
-          <div className="flex flex-col h-full justify-between py-8">
+          <div className="flex min-h-full flex-col gap-8 py-8">
             <div className="space-y-6">
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold text-white">
@@ -508,7 +516,7 @@ export default function NabuOnboarding() {
                     className={`p-4 rounded-2xl border-2 text-center transition-all duration-200 flex flex-col items-center justify-center gap-2 h-28
                       ${
                         data.preferredVibes.includes(v)
-                          ? "border-[#9D84FF] bg-[#9D84FF]/10 text-white"
+                          ? "border-[var(--color-primary)] bg-[rgb(var(--color-primary-rgb)/0.1)] text-white"
                           : "border-white/5 bg-white/5 text-white/70 hover:bg-white/10"
                       }
                       ${!data.preferredVibes.includes(v) && data.preferredVibes.length >= 3 ? "opacity-50 cursor-not-allowed" : ""}
@@ -519,18 +527,20 @@ export default function NabuOnboarding() {
                 ))}
               </div>
             </div>
-            <Button disabled={!isValidVibes} onClick={nextStep}>
-              {data.preferredVibes.length < 2
-                ? `Select ${2 - data.preferredVibes.length} more`
-                : "Continue"}
-            </Button>
+            <StickyFooter>
+              <Button disabled={!isValidVibes} onClick={nextStep}>
+                {data.preferredVibes.length < 2
+                  ? `Select ${2 - data.preferredVibes.length} more`
+                  : "Continue"}
+              </Button>
+            </StickyFooter>
           </div>
         );
 
       case 8: // Daily Habit
         const habits = ["1 minute", "3 minutes", "5 minutes", "Flexible"];
         return (
-          <div className="flex flex-col h-full justify-between py-8">
+          <div className="flex min-h-full flex-col gap-8 py-8">
             <div className="space-y-8">
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold text-white">
@@ -551,9 +561,11 @@ export default function NabuOnboarding() {
                 ))}
               </div>
             </div>
-            <Button disabled={!data.dailyHabit} onClick={nextStep}>
-              Continue
-            </Button>
+            <StickyFooter>
+              <Button disabled={!data.dailyHabit} onClick={nextStep}>
+                Continue
+              </Button>
+            </StickyFooter>
           </div>
         );
 
@@ -568,7 +580,7 @@ export default function NabuOnboarding() {
           { title: "Depends on the day", desc: "I like to choose" },
         ];
         return (
-          <div className="flex flex-col h-full justify-between py-8">
+          <div className="flex min-h-full flex-col gap-8 py-8">
             <div className="space-y-8">
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold text-white">
@@ -590,9 +602,11 @@ export default function NabuOnboarding() {
                 ))}
               </div>
             </div>
-            <Button disabled={!data.activityStyle} onClick={nextStep}>
-              Continue
-            </Button>
+            <StickyFooter>
+              <Button disabled={!data.activityStyle} onClick={nextStep}>
+                Continue
+              </Button>
+            </StickyFooter>
           </div>
         );
 
@@ -619,7 +633,7 @@ export default function NabuOnboarding() {
           },
         ];
         return (
-          <div className="flex flex-col h-full justify-between py-8">
+          <div className="flex min-h-full flex-col gap-8 py-8">
             <div className="space-y-8">
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold text-white">
@@ -641,9 +655,11 @@ export default function NabuOnboarding() {
                 ))}
               </div>
             </div>
-            <Button disabled={!data.connectionStatus} onClick={nextStep}>
-              Continue
-            </Button>
+            <StickyFooter>
+              <Button disabled={!data.connectionStatus} onClick={nextStep}>
+                Continue
+              </Button>
+            </StickyFooter>
           </div>
         );
 
@@ -652,10 +668,10 @@ export default function NabuOnboarding() {
 
       case 12: // Personalized Results
         return (
-          <div className="flex flex-col h-full justify-between py-8">
+          <div className="flex min-h-full flex-col gap-8 py-8">
             <div className="space-y-8">
               <div className="space-y-4">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#9D84FF]/20 text-[#9D84FF] text-sm font-medium">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[rgb(var(--color-primary-rgb)/0.2)] text-[var(--color-primary)] text-sm font-medium">
                   <Sparkles size={16} />
                   <span>Your Nabu Style</span>
                 </div>
@@ -683,27 +699,29 @@ export default function NabuOnboarding() {
                 </h3>
                 <ul className="space-y-3">
                   <li className="flex gap-3 text-white/80">
-                    <Check className="text-[#9D84FF] shrink-0" />
+                    <Check className="shrink-0 text-[var(--color-primary)]" />
                     <span>
                       A fun icebreaker question to share with your partner.
                     </span>
                   </li>
                   <li className="flex gap-3 text-white/80">
-                    <Check className="text-[#9D84FF] shrink-0" />
+                    <Check className="shrink-0 text-[var(--color-primary)]" />
                     <span>Your first mini-challenge based on your style.</span>
                   </li>
                 </ul>
               </div>
             </div>
-            <Button onClick={nextStep}>Sounds Good</Button>
+            <StickyFooter>
+              <Button onClick={nextStep}>Sounds Good</Button>
+            </StickyFooter>
           </div>
         );
 
       case 13: // Connect with Partner
         if (data.connectionStatus !== "invite_now") {
           return (
-            <div className="flex flex-col h-full justify-center items-center text-center py-8">
-              <div className="space-y-4">
+            <div className="flex min-h-full flex-col items-center text-center py-8">
+              <div className="flex flex-1 flex-col items-center justify-center space-y-4">
                 <h2 className="text-3xl font-bold text-white">
                   You're all set
                 </h2>
@@ -711,9 +729,9 @@ export default function NabuOnboarding() {
                   You can invite your partner later from inside the app.
                 </p>
               </div>
-              <div className="w-full mt-8">
+              <StickyFooter>
                 <Button onClick={nextStep}>Continue</Button>
-              </div>
+              </StickyFooter>
             </div>
           );
         }
@@ -721,15 +739,15 @@ export default function NabuOnboarding() {
 
       case 14: // Final Start
         return (
-          <div className="flex flex-col h-full justify-between py-8">
-            <div className="flex-1 flex flex-col items-center justify-center text-center space-y-6">
+          <div className="flex min-h-full flex-col py-8">
+            <div className="flex flex-1 flex-col items-center justify-center text-center space-y-6">
               <motion.div
                 initial={{ scale: 0, rotate: -180 }}
                 animate={{ scale: 1, rotate: 0 }}
                 transition={{ type: "spring", damping: 15 }}
-                className="w-24 h-24 bg-[#9D84FF] rounded-full flex items-center justify-center"
+                className="flex h-24 w-24 items-center justify-center rounded-full bg-[var(--color-primary)]"
               >
-                <Check size={48} className="text-[#13111C]" />
+                <Check size={48} className="text-[var(--surface)]" />
               </motion.div>
               <div className="space-y-4">
                 <h2 className="text-4xl font-bold text-white">
@@ -741,9 +759,9 @@ export default function NabuOnboarding() {
                 </p>
               </div>
             </div>
-            <div className="space-y-4">
+            <StickyFooter>
               <Button onClick={handleComplete}>Start My Journey</Button>
-            </div>
+            </StickyFooter>
           </div>
         );
 
@@ -753,8 +771,8 @@ export default function NabuOnboarding() {
   };
 
   return (
-    <div className="min-h-dvh bg-[#13111C] text-white font-sans selection:bg-[#9D84FF]/30 flex justify-center overflow-hidden">
-      <div className="w-full max-w-md h-dvh flex flex-col relative shadow-2xl bg-[#13111C]">
+    <div className="min-h-dvh bg-[var(--surface)] text-white font-sans selection:bg-[rgb(var(--color-primary-rgb)/0.3)] flex justify-center overflow-hidden">
+      <div className="relative flex h-dvh w-full max-w-md flex-col bg-[var(--surface)] shadow-2xl">
         {/* Header / Progress */}
         <div className="px-6 pt-[max(1.5rem,var(--safe-top))] pb-4 flex items-center justify-between z-10">
           {step > 1 && step < 14 && step !== 11 ? (
@@ -784,7 +802,7 @@ export default function NabuOnboarding() {
         </div>
 
         {/* Main Content Area with Animations */}
-        <div className="flex-1 px-6 relative overflow-hidden min-h-0 pb-[max(0.75rem,var(--safe-bottom))]">
+        <div className="flex-1 relative overflow-hidden min-h-0">
           <AnimatePresence custom={direction} mode="wait">
             <motion.div
               key={step}
@@ -794,7 +812,7 @@ export default function NabuOnboarding() {
               animate="center"
               exit="exit"
               transition={{ type: "tween", ease: "easeInOut", duration: 0.3 }}
-              className="absolute inset-0 px-6 h-full overflow-y-auto"
+              className="absolute inset-0 h-full overflow-y-auto px-6"
             >
               {renderScreen()}
             </motion.div>
@@ -841,9 +859,9 @@ const LoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
           repeat: Infinity,
           ease: "easeInOut",
         }}
-        className="w-20 h-20 bg-[#9D84FF]/20 rounded-full flex items-center justify-center"
+        className="flex h-20 w-20 items-center justify-center rounded-full bg-[rgb(var(--color-primary-rgb)/0.2)]"
       >
-        <Sparkles size={40} className="text-[#9D84FF]" />
+        <Sparkles size={40} className="text-[var(--color-primary)]" />
       </motion.div>
 
       <div className="h-8 relative w-full">
@@ -875,7 +893,7 @@ const InviteScreen = ({ onNext }: { onNext: () => void }) => {
   };
 
   return (
-    <div className="flex flex-col h-full justify-between py-8">
+    <div className="flex min-h-full flex-col gap-8 py-8">
       <div className="space-y-8">
         <div className="space-y-2">
           <h2 className="text-3xl font-bold text-white">Invite your partner</h2>
@@ -890,13 +908,13 @@ const InviteScreen = ({ onNext }: { onNext: () => void }) => {
             <p className="text-sm font-medium text-white/50 uppercase tracking-wider">
               Your Invite Link
             </p>
-            <div className="flex items-center gap-3 bg-[#13111C] p-4 rounded-2xl border border-white/10">
+            <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-[var(--surface)] p-4">
               <span className="flex-1 text-white truncate font-medium">
                 {inviteLink}
               </span>
               <button
                 onClick={handleCopy}
-                className="w-10 h-10 rounded-xl bg-[#9D84FF]/20 text-[#9D84FF] flex items-center justify-center hover:bg-[#9D84FF]/30 transition-colors shrink-0"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[rgb(var(--color-primary-rgb)/0.2)] text-[var(--color-primary)] transition-colors hover:bg-[rgb(var(--color-primary-rgb)/0.3)]"
               >
                 {copied ? <Check size={20} /> : <Copy size={20} />}
               </button>
@@ -918,11 +936,10 @@ const InviteScreen = ({ onNext }: { onNext: () => void }) => {
           </div>
         </div>
       </div>
-
-      <div className="space-y-4">
+      <StickyFooter>
         <Button
           onClick={handleCopy}
-          className="bg-white text-[#13111C] hover:bg-white/90"
+          className="bg-white text-[var(--surface)] hover:bg-white/90"
         >
           <Share2 size={20} />
           Share Invite Link
@@ -930,7 +947,7 @@ const InviteScreen = ({ onNext }: { onNext: () => void }) => {
         <Button variant="secondary" onClick={onNext}>
           I'll do this later
         </Button>
-      </div>
+      </StickyFooter>
     </div>
   );
 };
