@@ -14,9 +14,9 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     if (typeof performance.clearMeasures !== "function") {
       performance.clearMeasures = () => {};
     }
-    if (typeof performance.mark !== "function") {
-      performance.mark = () => {};
-    }
+   if (typeof performance.mark !== "function") {
+  performance.mark = (() => ({}) as PerformanceMark) as typeof performance.mark;
+}
     if (typeof performance.measure !== "function") {
       performance.measure = () => null as any;
     }
