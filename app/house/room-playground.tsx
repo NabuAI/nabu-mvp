@@ -5,26 +5,12 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-type AssetCategory = "floor" | "wall" | "frame" | "furniture";
-
-type Asset = {
-  path: string;
-  name: string;
-  width: number;
-  height: number;
-  category: AssetCategory;
-};
-
-type FrameTiles = {
-  top?: Asset;
-  bottom?: Asset;
-  sideLeft?: Asset;
-  sideRight?: Asset;
-  topLeft?: Asset;
-  topRight?: Asset;
-  bottomLeft?: Asset;
-  bottomRight?: Asset;
-};
+import { useRewards } from "@/app/providers/rewards-context";
+import {
+  deriveFurnitureCategory,
+  type Asset,
+  type FrameTiles,
+} from "@/lib/asset-metadata";
 
 type DraftPlacement = {
   asset: Asset;
@@ -145,27 +131,6 @@ function getTouchDistance(touches: React.TouchList) {
   return Math.hypot(dx, dy);
 }
 
-function deriveFurnitureCategory(name: string) {
-  const lowerName = name.toLowerCase();
-  if (/(chair|stool|bench|seat)/.test(lowerName)) return "Seating";
-  if (/(table|desk|counter)/.test(lowerName)) return "Tables";
-  if (/(bed|sofa|couch|armchair)/.test(lowerName)) return "Lounge";
-  if (/(lamp|light|lantern|chandelier)/.test(lowerName)) return "Lighting";
-  if (/(plant|tree|flower|bush|pot)/.test(lowerName)) return "Plants";
-  if (/(cabinet|shelf|drawer|wardrobe|bookcase|closet)/.test(lowerName))
-    return "Storage";
-  if (/(rug|carpet|mat)/.test(lowerName)) return "Rugs";
-  if (/(clock|mirror|painting|frame|vase|decor|statue)/.test(lowerName))
-    return "Decor";
-  const fallback = lowerName
-    .replace(/\d+/g, "")
-    .split(" ")
-    .map((part) => part.trim())
-    .find((part) => part.length > 1);
-  if (!fallback) return "Misc";
-  return fallback.charAt(0).toUpperCase() + fallback.slice(1);
-}
-
 export default function RoomPlayground({
   floors,
   walls,
@@ -199,6 +164,24 @@ export default function RoomPlayground({
   );
   const [panX, setPanX] = useState(0);
   const [panY, setPanY] = useState(0);
+
+  const { ownedFurnitureSet } = useRewards();
+  const starterPaths = useMemo(
+    () => furniture.slice(0, 14).map((item) => item.path),
+    [furniture],
+  );
+  const unlockedPaths = useMemo(() => {
+    const set = new Set<string>();
+    for (const path of starterPaths) {
+      set.add(path);
+    }
+    ownedFurnitureSet.forEach((path) => set.add(path));
+    return set;
+  }, [ownedFurnitureSet, starterPaths]);
+  const availableFurniture = useMemo(
+    () => furniture.filter((item) => unlockedPaths.has(item.path)),
+    [furniture, unlockedPaths],
+  );
 
   const clampScale = (nextScale: number, nextFitScale = fitScale) =>
     Math.min(MAX_SCALE, Math.max(nextFitScale, nextScale));
@@ -276,7 +259,7 @@ export default function RoomPlayground({
 
   const inventoryCategories = useMemo<InventoryCategory[]>(() => {
     const grouped = new Map<string, Asset[]>();
-    for (const item of furniture) {
+    for (const item of availableFurniture) {
       const category = deriveFurnitureCategory(item.name);
       const existing = grouped.get(category);
       if (existing) {
@@ -288,7 +271,7 @@ export default function RoomPlayground({
     return [...grouped.entries()]
       .map(([name, items]) => ({ name, items }))
       .sort((a, b) => a.name.localeCompare(b.name));
-  }, [furniture]);
+  }, [availableFurniture]);
 
   const activeInventoryCategoryName =
     inventoryCategory &&
@@ -960,6 +943,17 @@ export default function RoomPlayground({
 
             {activePanel === "inventory" ? (
               <>
+                <div className="flex items-center justify-between text-xs text-white/65">
+                  <span>{availableFurniture.length} items unlocked</span>
+                  <button
+                    type="button"
+                    onClick={() => router.push("/shop")}
+                    className="rounded-full border border-white/14 bg-white/8 px-3 py-1 font-semibold text-white hover:bg-white/14"
+                  >
+                    Open Shop
+                  </button>
+                </div>
+
                 <div className="flex gap-2 overflow-x-auto pb-1">
                   {inventoryCategories.map((category) => {
                     const active =
